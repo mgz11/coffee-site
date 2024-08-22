@@ -1,9 +1,9 @@
 "use server";
 
-import db from "@/db/db";
+import db from "../../../db/db";
 import { z } from "zod";
 import fs from "fs/promises";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 const fileSchema = z.instanceof(File, { message: "Required" });
 const imageSchema = fileSchema.refine(
@@ -18,7 +18,7 @@ const addSchema = z.object({
 	image: imageSchema.refine((file) => file.size > 0, "Required"),
 });
 
-export async function addProduct(formData: FormData) {
+export async function addProduct(prevState: unknown, formData: FormData) {
 	const result = addSchema.safeParse(Object.fromEntries(formData.entries()));
 	if (result.success === false) {
 		return result.error.formErrors.fieldErrors;
@@ -35,14 +35,39 @@ export async function addProduct(formData: FormData) {
 		Buffer.from(await data.image.arrayBuffer())
 	);
 
-	db.product.create({
-		data: {
-			name: data.name,
-			description: data.description,
-			priceInCents: data.priceInCents,
-			imageUrl: imagePath,
-		},
-	});
+	try {
+		const createdProduct = await db.product.create({
+			data: {
+				isAvailableForPurchase: false,
+				name: data.name,
+				description: data.description,
+				priceInCents: data.priceInCents,
+				imageUrl: imagePath,
+			},
+		});
+
+		// If the creation is successful, you can access the created object here
+		console.log("Product created successfully:", createdProduct);
+	} catch (err) {
+		console.error(`Error creating product:`, err);
+	}
 
 	redirect("/admin/products");
+}
+
+export async function toggleProductAvailability(
+	id: string,
+	isAvailableForPurchase: boolean
+) {
+	await db.product.update({ where: { id }, data: { isAvailableForPurchase } });
+}
+
+export async function deleteProduct(id: string) {
+	const product = await db.product.delete({ where: { id } });
+	if (product === null) {
+		return notFound();
+	}
+
+	// Delete image if product is deleted
+	await fs.unlink(`public${product.imageUrl}`);
 }
