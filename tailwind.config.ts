@@ -56,6 +56,11 @@ const config = {
 					DEFAULT: "hsl(var(--card))",
 					foreground: "hsl(var(--card-foreground))",
 				},
+				customLightPink: "rgb(255,196,209)", // Start color
+				customPinkEnd: "rgba(226,29,72,1)", // End color
+			},
+			backgroundImage: {
+				"radial-gradient": "radial-gradient(circle, var(--tw-gradient-stops))",
 			},
 			borderRadius: {
 				lg: "var(--radius)",
