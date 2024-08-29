@@ -10,6 +10,14 @@ import { addProduct, updateProduct } from "../../_actions/products";
 import { useFormState, useFormStatus } from "react-dom";
 import { Product } from "@prisma/client";
 import Image from "next/image";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function ProductForm({ product }: { product?: Product | null }) {
 	const [error, action] = useFormState(
@@ -19,6 +27,14 @@ export function ProductForm({ product }: { product?: Product | null }) {
 	const [priceInCents, setPriceInCents] = useState<number | undefined>(
 		product?.priceInCents
 	);
+	const [selectedProductType, setSelectedProductType] = useState<
+		string | undefined
+	>(product?.productType);
+
+	const handleSelect = (type: string) => {
+		setSelectedProductType(type);
+	};
+
 	return (
 		<form action={action} className="space-y-8">
 			<div className="space-y-2">
@@ -32,6 +48,41 @@ export function ProductForm({ product }: { product?: Product | null }) {
 				/>
 				{error.name && <div className="text-destructive">{error.name}</div>}
 			</div>
+			<div className="space-y-2">
+				<Label htmlFor="productType">Product Type</Label>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Input
+							type="text"
+							id="productType"
+							name="productType"
+							value={selectedProductType}
+							readOnly
+							placeholder="Select a product type"
+						/>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="start">
+						<DropdownMenuLabel>Product Types</DropdownMenuLabel>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem onClick={() => handleSelect("Coffee")}>
+							Coffee
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={() => handleSelect("Tea")}>
+							Tea
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={() => handleSelect("Pastry")}>
+							Pastry
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={() => handleSelect("Sandwich")}>
+							Sandwich
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+				{error.productType && (
+					<div className="text-destructive">{error.productType}</div>
+				)}
+			</div>
+
 			<div className="space-y-2">
 				<Label htmlFor="priceInCents">Price In Cents</Label>
 				<Input

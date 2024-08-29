@@ -13,6 +13,7 @@ const imageSchema = fileSchema.refine(
 // Validation schema using Zod
 const addSchema = z.object({
 	name: z.string().min(1),
+	productType: z.string(),
 	description: z.string().min(1),
 	priceInCents: z.coerce.number().int().min(1),
 	image: imageSchema.refine((file) => file.size > 0, "Required"),
@@ -40,6 +41,7 @@ export async function addProduct(prevState: unknown, formData: FormData) {
 			data: {
 				isAvailableForPurchase: false,
 				name: data.name,
+				productType: data.productType,
 				description: data.description,
 				priceInCents: data.priceInCents,
 				imageUrl: imagePath,
@@ -92,6 +94,7 @@ export async function updateProduct(
 			where: { id },
 			data: {
 				name: data.name,
+				productType: data.productType,
 				description: data.description,
 				priceInCents: data.priceInCents,
 				imageUrl: imagePath,
