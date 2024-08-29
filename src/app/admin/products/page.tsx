@@ -44,6 +44,7 @@ async function ProductsTable() {
 		select: {
 			id: true,
 			name: true,
+			productType: true,
 			priceInCents: true,
 			isAvailableForPurchase: true,
 		},
@@ -79,6 +80,7 @@ async function ProductsTable() {
 						<span className="sr-only">Available For Purchase</span>
 					</TableHead>
 					<TableHead>Name</TableHead>
+					<TableHead>Product Type</TableHead>
 					<TableHead>Price</TableHead>
 					<TableHead>Orders</TableHead>
 					<TableHead className="w-0">
@@ -103,6 +105,7 @@ async function ProductsTable() {
 							)}
 						</TableCell>
 						<TableCell>{product.name}</TableCell>
+						<TableCell>{product.productType}</TableCell>
 						<TableCell>{formatCurrency(product.priceInCents / 100)}</TableCell>
 						<TableCell>{formatNumber(product.totalQuantityOrdered)}</TableCell>
 						<TableCell>
