@@ -23,6 +23,7 @@ import {
 	ActiveToggleDropdownItem,
 	DeleteDropdownItem,
 } from "./_components/ProductActions";
+import React from "react";
 
 export default function AdminProductsPage() {
 	return (
@@ -70,6 +71,16 @@ async function ProductsTable() {
 		};
 	});
 
+	// Group products by productType
+	const groupedProducts = productsWithQuantities.reduce((acc, product) => {
+		const { productType } = product;
+		if (!acc[productType]) {
+			acc[productType] = [];
+		}
+		acc[productType].push(product);
+		return acc;
+	}, {} as Record<string, typeof productsWithQuantities>);
+
 	if (products.length === 0) return <p>No products found!</p>;
 
 	return (
@@ -89,51 +100,68 @@ async function ProductsTable() {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{productsWithQuantities.map((product) => (
-					<TableRow key={product.id}>
-						<TableCell>
-							{product.isAvailableForPurchase ? (
-								<>
-									<CheckCircle2 className="stroke-lime-600" />
-									<span className="sr-only">Available</span>
-								</>
-							) : (
-								<>
-									<XCircle className="stroke-destructive" />
-									<span className="sr-only">Unavailable</span>
-								</>
-							)}
-						</TableCell>
-						<TableCell>{product.name}</TableCell>
-						<TableCell>{product.productType}</TableCell>
-						<TableCell>{formatCurrency(product.priceInCents / 100)}</TableCell>
-						<TableCell>{formatNumber(product.totalQuantityOrdered)}</TableCell>
-						<TableCell>
-							<DropdownMenu>
-								<DropdownMenuTrigger>
-									<MoreVertical />
-									<span className="sr-only">Actions</span>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent>
-									<DropdownMenuItem asChild>
-										<Link href={`/admin/products/${product.id}/edit`}>
-											Edit
-										</Link>
-									</DropdownMenuItem>
-									<ActiveToggleDropdownItem
-										id={product.id}
-										isAvailableForPurchase={product.isAvailableForPurchase}
-									/>
-									<DropdownMenuSeparator />
-									<DeleteDropdownItem
-										id={product.id}
-										disabled={product.totalQuantityOrdered > 0}
-									/>
-								</DropdownMenuContent>
-							</DropdownMenu>
-						</TableCell>
-					</TableRow>
-				))}
+				{Object.entries(groupedProducts).map(
+					([type, productsWithQuantities]) => (
+						<React.Fragment key={type}>
+							<TableRow>
+								<TableCell colSpan={6} className="font-bold bg-muted">
+									{type}
+								</TableCell>
+							</TableRow>
+							{productsWithQuantities.map((product) => (
+								<TableRow key={product.id}>
+									<TableCell>
+										{product.isAvailableForPurchase ? (
+											<>
+												<CheckCircle2 className="stroke-lime-600" />
+												<span className="sr-only">Available</span>
+											</>
+										) : (
+											<>
+												<XCircle className="stroke-destructive" />
+												<span className="sr-only">Unavailable</span>
+											</>
+										)}
+									</TableCell>
+									<TableCell>{product.name}</TableCell>
+									<TableCell>{product.productType}</TableCell>
+									<TableCell>
+										{formatCurrency(product.priceInCents / 100)}
+									</TableCell>
+									<TableCell>
+										{formatNumber(product.totalQuantityOrdered)}
+									</TableCell>
+									<TableCell>
+										<DropdownMenu>
+											<DropdownMenuTrigger>
+												<MoreVertical />
+												<span className="sr-only">Actions</span>
+											</DropdownMenuTrigger>
+											<DropdownMenuContent>
+												<DropdownMenuItem asChild>
+													<Link href={`/admin/products/${product.id}/edit`}>
+														Edit
+													</Link>
+												</DropdownMenuItem>
+												<ActiveToggleDropdownItem
+													id={product.id}
+													isAvailableForPurchase={
+														product.isAvailableForPurchase
+													}
+												/>
+												<DropdownMenuSeparator />
+												<DeleteDropdownItem
+													id={product.id}
+													disabled={product.totalQuantityOrdered > 0}
+												/>
+											</DropdownMenuContent>
+										</DropdownMenu>
+									</TableCell>
+								</TableRow>
+							))}
+						</React.Fragment>
+					)
+				)}
 			</TableBody>
 		</Table>
 	);
