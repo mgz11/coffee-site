@@ -17,7 +17,7 @@ export default function CustomerLayout({
 				<div className="flex-1 flex items-center p-4">
 					<h1 className="text-3xl font-bold">Brand Name</h1>
 				</div>
-				<div className="flex-1 flex justify-center space-x-4">
+				<div className="flex-1 flex justify-center px-4">
 					<NavLink href="/">Home</NavLink>
 					<NavLink href="/about">About</NavLink>
 					<NavLink href="/menu">Menu</NavLink>
