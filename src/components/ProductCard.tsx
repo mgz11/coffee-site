@@ -1,3 +1,5 @@
+"use client";
+
 import { formatCurrency } from "@/lib/formatters";
 import {
 	Card,
@@ -9,6 +11,7 @@ import {
 } from "./ui/card";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import { useCart } from "@/contexts/CartContext";
 
 type ProductCardProps = {
 	id: string;
@@ -24,6 +27,12 @@ export function ProductCard({
 	description,
 	imageUrl,
 }: ProductCardProps) {
+	const { addToCart } = useCart();
+
+	const handleAddToCart = () => {
+		addToCart({ name, priceInCents, imageUrl: imageUrl || undefined });
+	};
+
 	return (
 		<Card className="flex overflow-hidden flex-col m-12">
 			<div className="relative w-full h-auto aspect-auto">
@@ -48,7 +57,7 @@ export function ProductCard({
 				<p className="line-clamp-4">{description}</p>
 			</CardContent>
 			<CardFooter>
-				<Button size="lg" className="w-full">
+				<Button size="lg" className="w-full" onClick={handleAddToCart}>
 					Add to Order
 				</Button>
 			</CardFooter>
