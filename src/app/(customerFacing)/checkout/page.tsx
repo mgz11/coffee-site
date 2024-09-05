@@ -5,7 +5,8 @@ import { useCart } from "@/contexts/CartContext";
 import { formatCurrency } from "@/lib/formatters";
 
 export default function CheckoutPage() {
-	const { cart, removeFromCart } = useCart();
+	const { cart, removeFromCart, decreaseQuantity, increaseQuantity } =
+		useCart();
 
 	return (
 		<div className="p-12">
@@ -21,8 +22,13 @@ export default function CheckoutPage() {
 						<div>
 							<h2>{item.name}</h2>
 							<p>{formatCurrency(item.priceInCents / 100)}</p>
+							<p>Quantity: {item.quantity}</p>
 						</div>
-						<Button onClick={() => removeFromCart(item.name)}>Remove</Button>
+						<div className="flex items-center space-x-4">
+							<Button onClick={() => decreaseQuantity(item.name)}>-</Button>
+							<Button onClick={() => increaseQuantity(item.name)}>+</Button>
+							<Button onClick={() => removeFromCart(item.name)}>Remove</Button>
+						</div>
 					</div>
 				))
 			)}

@@ -12,6 +12,7 @@ import {
 import { Button } from "./ui/button";
 import Image from "next/image";
 import { useCart } from "@/contexts/CartContext";
+import { useState } from "react";
 
 type ProductCardProps = {
 	id: string;
@@ -28,9 +29,32 @@ export function ProductCard({
 	imageUrl,
 }: ProductCardProps) {
 	const { addToCart } = useCart();
+	const [loading, setLoading] = useState(false);
+	const [quantity, setQuantity] = useState(1);
+	const [showPopup, setShowPopup] = useState(false);
+	const [fadeOut, setFadeOut] = useState(false);
 
 	const handleAddToCart = () => {
-		addToCart({ name, priceInCents, imageUrl: imageUrl || undefined });
+		addToCart({
+			name,
+			priceInCents,
+			imageUrl: imageUrl || undefined,
+			quantity,
+		});
+
+		setLoading(true);
+		setShowPopup(true);
+		setFadeOut(false);
+
+		setTimeout(() => {
+			setFadeOut(true);
+		}, 500);
+
+		// Disable popup after 2.5 seconds
+		setTimeout(() => {
+			setShowPopup(false);
+			setLoading(false);
+		}, 1500);
 	};
 
 	return (
@@ -55,12 +79,39 @@ export function ProductCard({
 			</CardHeader>
 			<CardContent className="flex-grow">
 				<p className="line-clamp-4">{description}</p>
+				<div className="flex justify-center items-center space-x-4 mt-4">
+					<Button
+						size="sm"
+						onClick={() => setQuantity((q) => (q > 1 ? q - 1 : q))}
+						disabled={quantity <= 1}
+					>
+						-
+					</Button>
+					<span>{quantity}</span>
+					<Button size="sm" onClick={() => setQuantity((q) => q + 1)}>
+						+
+					</Button>
+				</div>
 			</CardContent>
 			<CardFooter>
-				<Button size="lg" className="w-full" onClick={handleAddToCart}>
-					Add to Order
+				<Button
+					size="lg"
+					className="w-full"
+					onClick={handleAddToCart}
+					disabled={loading}
+				>
+					{loading ? "Adding..." : "Add to Order"}
 				</Button>
 			</CardFooter>
+			{showPopup && (
+				<div
+					className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white p-4 rounded shadow-lg transition-opacity duration-1000 ${
+						fadeOut ? "opacity-0" : "opacity-100"
+					}`}
+				>
+					Added to Order!
+				</div>
+			)}
 		</Card>
 	);
 }
