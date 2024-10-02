@@ -10,7 +10,7 @@ import {
 	CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { useCart } from "@/contexts/CartContext";
 import { useState } from "react";
 
@@ -23,6 +23,7 @@ type ProductCardProps = {
 };
 
 export function ProductCard({
+	id,
 	name,
 	priceInCents,
 	description,
@@ -35,11 +36,13 @@ export function ProductCard({
 	const [fadeOut, setFadeOut] = useState(false);
 
 	const handleAddToCart = () => {
+		const currentQuantity = quantity;
 		addToCart({
+			productId: id,
 			name,
 			priceInCents,
 			imageUrl: imageUrl || undefined,
-			quantity,
+			quantity: currentQuantity,
 		});
 
 		setLoading(true);
@@ -58,7 +61,7 @@ export function ProductCard({
 	};
 
 	return (
-		<Card className="flex overflow-hidden flex-col m-12">
+		<Card className="flex overflow-hidden flex-col m-12 relative">
 			<div className="relative w-full h-auto aspect-auto">
 				{imageUrl ? (
 					<div className="relative w-full h-auto aspect-video">
@@ -105,7 +108,7 @@ export function ProductCard({
 			</CardFooter>
 			{showPopup && (
 				<div
-					className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white p-4 rounded shadow-lg transition-opacity duration-1000 ${
+					className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-4 rounded shadow-lg transition-opacity duration-1000 ${
 						fadeOut ? "opacity-0" : "opacity-100"
 					}`}
 				>
