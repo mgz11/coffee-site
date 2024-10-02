@@ -3,6 +3,7 @@
 import { createContext, useContext, useState } from "react";
 
 interface CartItem {
+	productId: string;
 	name: string;
 	priceInCents: number;
 	imageUrl?: string;
@@ -12,9 +13,9 @@ interface CartItem {
 interface CartContextProps {
 	cart: CartItem[];
 	addToCart: (item: CartItem) => void;
-	removeFromCart: (itemName: string) => void;
-	decreaseQuantity: (item: string) => void;
-	increaseQuantity: (item: string) => void;
+	removeFromCart: (productId: string) => void;
+	decreaseQuantity: (productId: string) => void;
+	increaseQuantity: (productId: string) => void;
 }
 
 const CartContext = createContext<CartContextProps | undefined>(undefined);
@@ -22,54 +23,56 @@ const CartContext = createContext<CartContextProps | undefined>(undefined);
 export function CartProvider({ children }: React.PropsWithChildren<{}>) {
 	const [cart, setCart] = useState<CartItem[]>([]);
 
-	const addToCart = (item: Omit<CartItem, "quantity">) => {
+	const addToCart = (item: CartItem) => {
 		setCart((prevCart) => {
 			const existingItem = prevCart.find(
-				(cartItem) => cartItem.name === item.name
+				(cartItem) => cartItem.productId === item.productId
 			);
 			if (existingItem) {
 				return prevCart.map((cartItem) =>
-					cartItem.name === item.name
+					cartItem.productId === item.productId
 						? { ...cartItem, quantity: cartItem.quantity + 1 }
 						: cartItem
 				);
 			} else {
-				return [...prevCart, { ...item, quantity: 1 }];
+				return [...prevCart, { ...item }];
 			}
 		});
 	};
 
-	const decreaseQuantity = (itemName: string) => {
+	const decreaseQuantity = (productId: string) => {
 		setCart((prevCart) => {
 			const existingItem = prevCart.find(
-				(cartItem) => cartItem.name === itemName
+				(cartItem) => cartItem.productId === productId
 			);
 			if (existingItem && existingItem.quantity > 1) {
 				// Decrease quantity if more than 1 exists
 				return prevCart.map((cartItem) =>
-					cartItem.name === itemName
+					cartItem.productId === productId
 						? { ...cartItem, quantity: cartItem.quantity - 1 }
 						: cartItem
 				);
 			} else {
 				// Remove the item if its quantity becomes 0
-				return prevCart.filter((cartItem) => cartItem.name !== itemName);
+				return prevCart.filter((cartItem) => cartItem.productId !== productId);
 			}
 		});
 	};
 
-	const increaseQuantity = (itemName: string) => {
+	const increaseQuantity = (productId: string) => {
 		setCart((prevCart) => {
 			return prevCart.map((cartItem) =>
-				cartItem.name === itemName
+				cartItem.productId === productId
 					? { ...cartItem, quantity: cartItem.quantity + 1 }
 					: cartItem
 			);
 		});
 	};
 
-	const removeFromCart = (itemName: string) => {
-		setCart((prevCart) => prevCart.filter((item) => item.name !== itemName));
+	const removeFromCart = (productId: string) => {
+		setCart((prevCart) =>
+			prevCart.filter((item) => item.productId !== productId)
+		);
 	};
 
 	return (
