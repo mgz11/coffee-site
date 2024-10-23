@@ -1,40 +1,61 @@
-"use client";
+// page.tsx
+import dynamic from "next/dynamic";
 
-import { Button } from "@/components/ui/button";
-import { useCart } from "@/contexts/CartContext";
-import { formatCurrency } from "@/lib/formatters";
+// Dynamically import the CheckoutClient to ensure it only runs on the client side
+const CheckoutClient = dynamic(
+	() => import("./_components/CheckoutComponent"),
+	{ ssr: false }
+);
 
-export default function CheckoutPage() {
-	const { cart, removeFromCart, decreaseQuantity, increaseQuantity } =
-		useCart();
-
+const CheckoutPage = () => {
 	return (
-		<div className="p-12">
-			<h1 className="text-3xl mb-8">Your Cart</h1>
-			{cart.length === 0 ? (
-				<p>Your cart is empty.</p>
-			) : (
-				cart.map((item) => (
-					<div
-						key={item.name}
-						className="flex justify-between items-center mb-4"
-					>
-						<div>
-							<h2>{item.name}</h2>
-							<p>{formatCurrency(item.priceInCents / 100)}</p>
-							<p>Quantity: {item.quantity}</p>
-						</div>
-						<div className="flex items-center space-x-4">
-							<Button onClick={() => decreaseQuantity(item.name)}>-</Button>
-							<Button onClick={() => increaseQuantity(item.name)}>+</Button>
-							<Button onClick={() => removeFromCart(item.name)}>Remove</Button>
-						</div>
-					</div>
-				))
-			)}
-			<Button className="mt-8" size="lg">
-				Proceed to Checkout
-			</Button>
+		<div>
+			<h1>Checkout</h1>
+			<CheckoutClient />
 		</div>
 	);
-}
+};
+
+export default CheckoutPage;
+
+// import CheckoutContainer from "./_containers/CheckoutContainer";
+
+// export default function CheckoutPage() {
+// 	return <CheckoutContainer />;
+
+// async function handleCheckout() {
+//     try {
+//         const newOrder = await db.order.create({
+//             data: {
+//                 userId: "test1",
+//                 totalInCents: purchaseTotal,
+//             }
+//         });
+
+//         const orderItems = cart.map((item) => ({
+//             orderId: newOrder.id,
+//             quantity: item.quantity,
+//             priceInCents: item.priceInCents,
+//             productId: item.productId,
+//         }));
+
+//         // Add all the order items to the db
+//         await db.orderItem.createMany({ data: orderItems });
+
+//         const paymentIntent = await stripe.paymentIntents.create({
+//             amount: purchaseTotal,
+//             currency: "USD",
+//             metadata: { orderId: newOrder.id }
+//         })
+
+//         if (paymentIntent.client_secret == null) {
+//             throw Error ("Stripe failed to create payment intent.")
+//         }
+
+//     } catch (error) {
+//         console.error("Error during checkout: ", error);
+//     }
+// }
+
+// return <CheckoutForm clientSecret={paymentIntent.client_secret}>;
+//}

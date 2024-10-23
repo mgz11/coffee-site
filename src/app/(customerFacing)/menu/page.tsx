@@ -1,8 +1,10 @@
 import { ProductCard, ProductCardSkeleton } from "@/components/ProductCard";
 import db from "@/db/db";
+import { cache } from "@/lib/cache";
+import React from "react";
 import { Suspense } from "react";
 
-async function getProductsByType() {
+const getProductsByType = cache(async () => {
 	const products = await db.product.findMany({
 		where: { isAvailableForPurchase: true },
 	});
@@ -16,7 +18,7 @@ async function getProductsByType() {
 		acc[productType].push(product);
 		return acc;
 	}, {} as Record<string, typeof products>);
-}
+}, ["/menu", "getProductsByType"]);
 
 export default function MenuPage() {
 	return (

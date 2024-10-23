@@ -1,5 +1,6 @@
 import { Nav, NavLink } from "@/components/Nav";
 import Link from "next/link";
+import React from "react";
 
 /*
 This causes admin pages not to be cached since admin pages
@@ -24,8 +25,8 @@ export default function CustomerLayout({
 					<NavLink href="/menu">Menu</NavLink>
 				</div>
 				<div className="flex-1 flex justify-end items-center pr-4">
-					<Link href="/checkout">
-						<button className="relative">Checkout</button>
+					<Link href="/cart">
+						<button className="relative">View Cart</button>
 					</Link>
 				</div>
 			</Nav>
