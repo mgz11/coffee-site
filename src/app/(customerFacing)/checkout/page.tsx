@@ -10,7 +10,6 @@ const CheckoutClient = dynamic(
 const CheckoutPage = () => {
 	return (
 		<div>
-			<h1>Checkout</h1>
 			<CheckoutClient />
 		</div>
 	);

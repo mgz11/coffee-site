@@ -42,7 +42,12 @@ const CheckoutComponent = () => {
 
 	if (!clientSecret) return <p>Error creating payment intent</p>;
 
-	return <CheckoutForm clientSecret={clientSecret} />;
+	return (
+		<CheckoutForm
+			totalAmountInCents={totalAmount}
+			clientSecret={clientSecret}
+		/>
+	);
 };
 
 export default CheckoutComponent;
