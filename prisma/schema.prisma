@@ -20,22 +20,10 @@ model Product {
   OrderItem              OrderItem[]
 }
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  orders    Order[]
-}
-
 model Order {
   id           String      @id @default(uuid())
-  userId       String
   totalInCents Int
   createdAt    DateTime    @default(now())
-  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   items        OrderItem[]
 }
 
