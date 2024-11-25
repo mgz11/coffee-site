@@ -21,10 +21,11 @@ model Product {
 }
 
 model Order {
-  id           String      @id @default(uuid())
-  totalInCents Int
-  createdAt    DateTime    @default(now())
-  items        OrderItem[]
+  id              String      @id @default(uuid())
+  totalInCents    Int
+  createdAt       DateTime    @default(now())
+  paymentIntentId String      @unique
+  items           OrderItem[]
 }
 
 model OrderItem {
