@@ -21,22 +21,22 @@ async function getSalesData() {
 	};
 }
 
-async function getUserData() {
-	const [userCount, orderData] = await Promise.all([
-		db.user.count(),
-		db.order.aggregate({
-			_sum: { totalInCents: true },
-		}),
-	]);
+// async function getUserData() {
+// 	const [userCount, orderData] = await Promise.all([
+// 		db.user.count(),
+// 		db.order.aggregate({
+// 			_sum: { totalInCents: true },
+// 		}),
+// 	]);
 
-	return {
-		userCount,
-		averageValuePerUser:
-			userCount === 0
-				? 0
-				: (orderData._sum.totalInCents || 0) / userCount / 100,
-	};
-}
+// 	return {
+// 		userCount,
+// 		averageValuePerUser:
+// 			userCount === 0
+// 				? 0
+// 				: (orderData._sum.totalInCents || 0) / userCount / 100,
+// 	};
+// }
 
 async function getProductData() {
 	const [activeCount, inactiveCount] = await Promise.all([
@@ -51,25 +51,17 @@ async function getProductData() {
 }
 
 export default async function AdminDashboard() {
-	const [salesData, userData, productData] = await Promise.all([
+	const [salesData, productData] = await Promise.all([
 		getSalesData(),
-		getUserData(),
 		getProductData(),
 	]);
 
 	return (
-		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
 			<DashboardCard
 				title="Sales"
 				subtitle={`${formatNumber(salesData.numberOfSales)} Orders`}
 				body={formatCurrency(salesData.amount)}
-			/>
-			<DashboardCard
-				title="Customers"
-				subtitle={`${formatCurrency(
-					userData.averageValuePerUser
-				)} Average Value`}
-				body={formatNumber(userData.userCount)}
 			/>
 			<DashboardCard
 				title="Active Products"
