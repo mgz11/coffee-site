@@ -45,7 +45,7 @@ export default function CartPage() {
 							<Button onClick={() => decreaseQuantity(item.productId)}>
 								-
 							</Button>
-							<span>{item.quantity}</span>
+							<span className="w-6 text-center">{item.quantity}</span>
 							<Button onClick={() => increaseQuantity(item.productId)}>
 								+
 							</Button>
