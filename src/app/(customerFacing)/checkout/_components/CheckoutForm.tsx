@@ -9,6 +9,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { useCart } from "@/contexts/CartContext";
 import { formatCurrency } from "@/lib/formatters";
 import {
 	Elements,
@@ -32,18 +33,25 @@ export function CheckoutForm({
 	totalAmountInCents,
 	clientSecret,
 }: CheckoutFormProps) {
+	const { cart } = useCart();
 	return (
 		<>
 			<div className="max-w-5xl w-full m-auto space-y-8 mt-8">
 				<Elements options={{ clientSecret }} stripe={stripePromise}>
-					<Form totalAmountInCents={totalAmountInCents} />
+					<Form totalAmountInCents={totalAmountInCents} cart={cart} />
 				</Elements>
 			</div>
 		</>
 	);
 }
 
-function Form({ totalAmountInCents }: { totalAmountInCents: number }) {
+function Form({
+	totalAmountInCents,
+	cart,
+}: {
+	totalAmountInCents: number;
+	cart: any;
+}) {
 	// Create instance of Stripe and hook up elements to it
 	const stripe = useStripe();
 	const elements = useElements();
@@ -66,12 +74,48 @@ function Form({ totalAmountInCents }: { totalAmountInCents: number }) {
 				confirmParams: {
 					return_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/stripe/purchase-success`,
 				},
+				redirect: "if_required", // Prevent immediate redirection
 			})
-			.then(({ error }) => {
-				if (error.type === "card_error" || error.type === "validation_error") {
-					setErrorMessage(error.message);
+			.then(({ paymentIntent, error }) => {
+				if (error) {
+					if (
+						error?.type === "card_error" ||
+						error?.type === "validation_error"
+					) {
+						setErrorMessage(error.message);
+					} else {
+						setErrorMessage("An unexpected error occurred.");
+					}
+					return;
+				}
+
+				// Call API route to submit order if payment was successful
+				if (paymentIntent?.status === "succeeded") {
+					return fetch("/api/stripe/purchase-success", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							paymentIntentId: paymentIntent.id,
+							cart,
+						}),
+					})
+						.then((response) => {
+							if (!response.ok) {
+								throw new Error("Failed to submit order");
+							}
+							return response.json();
+						})
+						.then((data) => {
+							// Redirect to success page after submitting order
+							console.log("Order submitted:", data);
+							window.location.href = `${process.env.NEXT_PUBLIC_SERVER_URL}/stripe/purchase-success`;
+						})
+						.catch((error) => {
+							console.error("Error submitting order:", error);
+							setErrorMessage("An error occurred while submitting your order.");
+						});
 				} else {
-					setErrorMessage("An unexpected error occurred.");
+					setErrorMessage("An unexpected error occurred with the payment.");
 				}
 			})
 			.finally(() => setIsLoading(false));
