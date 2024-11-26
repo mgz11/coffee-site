@@ -108,7 +108,7 @@ function Form({
 						.then((data) => {
 							// Redirect to success page after submitting order
 							console.log("Order submitted:", data);
-							window.location.href = `${process.env.NEXT_PUBLIC_SERVER_URL}/stripe/purchase-success`;
+							window.location.href = `${process.env.NEXT_PUBLIC_SERVER_URL}/stripe/purchase-success?orderId=${data.orderId}`;
 						})
 						.catch((error) => {
 							console.error("Error submitting order:", error);
