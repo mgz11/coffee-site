@@ -14,10 +14,22 @@ export async function POST(request: Request) {
 			);
 		}
 
+		const metadataItems = items.map(
+			(item: {
+				productId: string;
+				priceInCents: number;
+				quantity: number;
+			}) => ({
+				productId: item.productId,
+				priceInCents: item.priceInCents,
+				quantity: item.quantity,
+			})
+		);
+
 		const paymentIntent = await stripe.paymentIntents.create({
 			amount,
 			currency: "USD",
-			metadata: { items: JSON.stringify(items) },
+			metadata: { items: JSON.stringify(metadataItems) },
 		});
 
 		return NextResponse.json({ clientSecret: paymentIntent.client_secret });

@@ -67,59 +67,74 @@ function Form({
 
 		setIsLoading(true);
 
-		// Confirm Stripe payment
 		stripe
 			.confirmPayment({
 				elements,
 				confirmParams: {
 					return_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/stripe/purchase-success`,
 				},
-				redirect: "if_required", // Prevent immediate redirection
 			})
-			.then(({ paymentIntent, error }) => {
-				if (error) {
-					if (
-						error?.type === "card_error" ||
-						error?.type === "validation_error"
-					) {
-						setErrorMessage(error.message);
-					} else {
-						setErrorMessage("An unexpected error occurred.");
-					}
-					return;
-				}
-
-				// Call API route to submit order if payment was successful
-				if (paymentIntent?.status === "succeeded") {
-					return fetch("/api/stripe/purchase-success", {
-						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({
-							paymentIntentId: paymentIntent.id,
-							cart,
-						}),
-					})
-						.then((response) => {
-							if (!response.ok) {
-								throw new Error("Failed to submit order");
-							}
-							return response.json();
-						})
-						.then((data) => {
-							// Redirect to success page after submitting order
-							console.log("Order submitted:", data);
-							window.location.href = `${process.env.NEXT_PUBLIC_SERVER_URL}/stripe/purchase-success?orderId=${data.orderId}`;
-						})
-						.catch((error) => {
-							console.error("Error submitting order:", error);
-							setErrorMessage("An error occurred while submitting your order.");
-						});
+			.then(({ error }) => {
+				if (error.type === "card_error" || error.type === "validation_error") {
+					setErrorMessage(error.message);
 				} else {
-					setErrorMessage("An unexpected error occurred with the payment.");
+					setErrorMessage("An unknown error has occurred.");
 				}
 			})
 			.finally(() => setIsLoading(false));
 	};
+
+	// // Confirm Stripe payment
+	// stripe
+	// 	.confirmPayment({
+	// 		elements,
+	// 		confirmParams: {
+	// 			return_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/stripe/purchase-success`,
+	// 		},
+	// 		redirect: "if_required", // Prevent immediate redirection
+	// 	})
+	// 	.then(({ paymentIntent, error }) => {
+	// 		if (error) {
+	// 			if (
+	// 				error?.type === "card_error" ||
+	// 				error?.type === "validation_error"
+	// 			) {
+	// 				setErrorMessage(error.message);
+	// 			} else {
+	// 				setErrorMessage("An unexpected error occurred.");
+	// 			}
+	// 			return;
+	// 		}
+
+	// 		// Call API route to submit order if payment was successful
+	// 		if (paymentIntent?.status === "succeeded") {
+	// 			return fetch("/api/stripe/purchase-success", {
+	// 				method: "POST",
+	// 				headers: { "Content-Type": "application/json" },
+	// 				body: JSON.stringify({
+	// 					paymentIntentId: paymentIntent.id,
+	// 					cart,
+	// 				}),
+	// 			})
+	// 				.then((response) => {
+	// 					if (!response.ok) {
+	// 						throw new Error("Failed to submit order");
+	// 					}
+	// 					return response.json();
+	// 				})
+	// 				.then((data) => {
+	// 					// Redirect to success page after submitting order
+	// 					window.location.href = `${process.env.NEXT_PUBLIC_SERVER_URL}/stripe/purchase-success?orderId=${data.orderId}`;
+	// 				})
+	// 				.catch((error) => {
+	// 					console.error("Error submitting order:", error);
+	// 					setErrorMessage("An error occurred while submitting your order.");
+	// 				});
+	// 		} else {
+	// 			setErrorMessage("An unexpected error occurred with the payment.");
+	// 		}
+	// 	})
+	// 	.finally(() => setIsLoading(false));
 
 	return (
 		<form onSubmit={handleSubmit}>
