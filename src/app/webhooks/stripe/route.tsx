@@ -1,8 +1,10 @@
 import db from "@/db/db";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { Resend } from "resend";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 export async function POST(request: NextRequest) {
 	const event = await stripe.webhooks.constructEvent(
@@ -24,6 +26,10 @@ export async function POST(request: NextRequest) {
 				{ error: "Invalid PaymentIntentId" },
 				{ status: 400 }
 			);
+		}
+
+		if (email == null) {
+			return new NextResponse("Email not valid", { status: 400 });
 		}
 
 		let items: any[] = [];
@@ -74,7 +80,13 @@ export async function POST(request: NextRequest) {
 					},
 				},
 			});
-			return NextResponse.json({ orderId: order.id }, { status: 200 });
+
+			await resend.emails.send({
+				from: `Support <${process.env.SENDER_EMAIL}>`,
+				to: email,
+				subject: "Order Confirmation",
+				react: <h1>Hi</h1>,
+			});
 		} catch (error) {
 			console.error("Error saving order to database:", error);
 			return NextResponse.json(
@@ -82,7 +94,7 @@ export async function POST(request: NextRequest) {
 				{ status: 500 }
 			);
 		}
-	} else {
-		return NextResponse.json({ message: "Event not handled" }, { status: 400 });
 	}
+
+	return new NextResponse();
 }
