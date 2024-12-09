@@ -81,6 +81,9 @@ export async function POST(request: NextRequest) {
 				},
 			});
 
+			// Use part of the order id as the order number that will be sent in the email
+			const orderNumber = order.id.substring(0, 8);
+
 			await resend.emails.send({
 				from: `Support <${process.env.SENDER_EMAIL}>`,
 				to: email,

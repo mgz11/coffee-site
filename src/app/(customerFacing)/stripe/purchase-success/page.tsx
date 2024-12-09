@@ -13,11 +13,11 @@ import { CheckCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 export default function SuccessPage() {
-	const searchParams = useSearchParams();
-	const orderId = searchParams.get("orderId");
+	// const searchParams = useSearchParams();
+	// const orderId = searchParams.get("orderId");
 
-	const orderNumber =
-		typeof orderId === "string" ? orderId.substring(0, 8) : null;
+	// const orderNumber =
+	// 	typeof orderId === "string" ? orderId.substring(0, 8) : null;
 
 	return (
 		<div className="container mx-auto px-4 py-8">
@@ -29,11 +29,7 @@ export default function SuccessPage() {
 				<CardContent className="space-y-4">
 					<div className="text-center text-muted-foreground">
 						<p>Thank you for your purchase.</p>
-						{orderNumber ? (
-							<p>Order Number: {orderNumber}</p>
-						) : (
-							<p>Order details are being processed. Please check back later.</p>
-						)}
+						<p>Check your email for details about your order.</p>
 					</div>
 				</CardContent>
 				<CardFooter className="flex justify-center">
