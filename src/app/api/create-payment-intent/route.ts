@@ -1,3 +1,4 @@
+import db from "@/db/db";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -26,8 +27,47 @@ export async function POST(request: Request) {
 			})
 		);
 
+		/*Cross reference db and create the payment intent using amounts from db instead of client */
+		const productIds = items.map(
+			(item: { productId: string }) => item.productId
+		);
+		const products = await db.product.findMany({
+			where: {
+				id: {
+					in: productIds,
+				},
+				isAvailableForPurchase: true,
+			},
+		});
+
+		let totalAmount = 0;
+		for (const item of items) {
+			const product = products.find((p) => p.id === item.productId);
+
+			if (!product) {
+				return NextResponse.json(
+					{ message: `Product not found: ${item.productId}` },
+					{ status: 400 }
+				);
+			}
+
+			const productTotal = product.priceInCents * item.quantity;
+			totalAmount += productTotal;
+		}
+
+		if (totalAmount !== amount) {
+			return NextResponse.json(
+				{
+					message:
+						"Price discrepancy detected. Please refresh your cart and try again.",
+					recalculatedTotal: totalAmount,
+				},
+				{ status: 400 }
+			);
+		}
+
 		const paymentIntent = await stripe.paymentIntents.create({
-			amount,
+			amount: totalAmount,
 			currency: "USD",
 			metadata: { items: JSON.stringify(metadataItems) },
 		});
