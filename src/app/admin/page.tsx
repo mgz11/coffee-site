@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/card";
 import db from "@/db/db";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
+import { Overview } from "./_components/overview";
+import { PopularItems } from "./_components/popularItems";
 
 async function getSalesData() {
 	const data = await db.order.aggregate({
@@ -57,18 +59,38 @@ export default async function AdminDashboard() {
 	]);
 
 	return (
-		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-			<DashboardCard
-				title="Sales"
-				subtitle={`${formatNumber(salesData.numberOfSales)} Orders`}
-				body={formatCurrency(salesData.amount)}
-			/>
-			<DashboardCard
-				title="Active Products"
-				subtitle={`${formatNumber(productData.inactiveCount)} Inactive`}
-				body={formatNumber(productData.activeCount)}
-			/>
-		</div>
+		<>
+			<div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+				<DashboardCard
+					title="Sales"
+					subtitle={`${formatNumber(salesData.numberOfSales)} Orders`}
+					body={formatCurrency(salesData.amount)}
+				/>
+				<DashboardCard
+					title="Active Products"
+					subtitle={`${formatNumber(productData.inactiveCount)} Inactive`}
+					body={formatNumber(productData.activeCount)}
+				/>
+				<Card className="lg:col-span-3">
+					<CardHeader>
+						<CardTitle>
+							Monthly Sales Overview ({new Date().getFullYear()})
+						</CardTitle>
+					</CardHeader>
+					<CardContent className="pl-2">
+						<Overview />
+					</CardContent>
+				</Card>
+				<Card className="lg:col-span-1">
+					<CardHeader>
+						<CardTitle>Popular Items</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<PopularItems />
+					</CardContent>
+				</Card>
+			</div>
+		</>
 	);
 }
 
