@@ -18,6 +18,7 @@ type PurchaseReceiptEmailProps = {
 			id: number;
 			orderId: string;
 			productId: string;
+			productName: string;
 			quantity: number;
 			priceInCents: number;
 		}[];
@@ -34,6 +35,7 @@ PurchaseReceiptEmail.PreviewProps = {
 				id: 1,
 				orderId: "123456789",
 				productId: "123456789",
+				productName: "Product One", // Added product name
 				quantity: 1,
 				priceInCents: 1000,
 			},
@@ -41,6 +43,7 @@ PurchaseReceiptEmail.PreviewProps = {
 				id: 2,
 				orderId: "123456789",
 				productId: "987654321",
+				productName: "Product Two", // Added product name
 				quantity: 2,
 				priceInCents: 2000,
 			},

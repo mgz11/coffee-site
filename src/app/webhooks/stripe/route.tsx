@@ -80,7 +80,11 @@ export async function POST(request: NextRequest) {
 					},
 				},
 				include: {
-					items: true,
+					items: {
+						include: {
+							product: true,
+						},
+					},
 				},
 			});
 
@@ -90,7 +94,14 @@ export async function POST(request: NextRequest) {
 				createdAt: order.createdAt,
 				orderNumber,
 				pricePaidInCents: order.totalInCents,
-				items: order.items,
+				items: order.items.map((item) => ({
+					id: item.id, // Include id
+					orderId: item.orderId, // Include orderId
+					productId: item.productId, // Include productId
+					productName: item.product.name, // Include product name
+					quantity: item.quantity,
+					priceInCents: item.priceInCents,
+				})),
 			};
 
 			await resend.emails.send({
