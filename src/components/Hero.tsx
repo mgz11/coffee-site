@@ -42,7 +42,7 @@ const Hero = () => {
 				{/* Text content */}
 				<div className="text-black flex flex-col justify-center items-center p-4 md:p-8 max-w-xl text-center">
 					<h1 className="text-3xl md:text-5xl font-bold leading-tight">
-						Welcome to Cafe [Name]
+						Welcome to Blush and Bloom Café
 					</h1>
 					<h2 className="text-2xl md:text-4xl font-bold leading-normal mt-2 md:mt-4">
 						Take a Sip and Relax
