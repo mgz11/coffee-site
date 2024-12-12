@@ -2,6 +2,7 @@ import db from "@/db/db";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { Resend } from "resend";
+import PurchaseReceiptEmail from "@/email/PurchaseReceipt";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 const resend = new Resend(process.env.RESEND_API_KEY as string);
@@ -36,9 +37,8 @@ export async function POST(request: NextRequest) {
 
 		// Get payment intent to get the metadata (items)
 		try {
-			const paymentIntent = await stripe.paymentIntents.retrieve(
-				paymentIntentId
-			);
+			const paymentIntent =
+				await stripe.paymentIntents.retrieve(paymentIntentId);
 			items = paymentIntent.metadata?.items
 				? JSON.parse(paymentIntent.metadata.items)
 				: [];
@@ -79,16 +79,25 @@ export async function POST(request: NextRequest) {
 						})),
 					},
 				},
+				include: {
+					items: true,
+				},
 			});
 
 			// Use part of the order id as the order number that will be sent in the email
 			const orderNumber = order.id.substring(0, 8);
+			const orderInfo = {
+				createdAt: order.createdAt,
+				orderNumber,
+				pricePaidInCents: order.totalInCents,
+				items: order.items,
+			};
 
 			await resend.emails.send({
 				from: `Support <${process.env.SENDER_EMAIL}>`,
 				to: email,
 				subject: "Order Confirmation",
-				react: <h1>Hi</h1>,
+				react: <PurchaseReceiptEmail order={orderInfo} />,
 			});
 		} catch (error) {
 			console.error("Error saving order to database:", error);

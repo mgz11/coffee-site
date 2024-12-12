@@ -49,7 +49,7 @@ export function Overview() {
 					formatter={(value) => [`$${value}`, "Sales"]}
 					labelFormatter={(label) => `Month: ${label}`}
 				/>
-				<Bar dataKey="amount" fill="#adfa1d" radius={[4, 4, 0, 0]} />
+				<Bar dataKey="amount" fill="#e21d48" radius={[4, 4, 0, 0]} />
 			</BarChart>
 		</ResponsiveContainer>
 	);
