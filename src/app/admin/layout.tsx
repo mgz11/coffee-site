@@ -20,8 +20,8 @@ export default function AdminLayout({
 						<Image
 							src="/assets/logo.png"
 							alt="logo"
-							width={100} // Restrict width
-							height={100} // Restrict height
+							width={100}
+							height={100}
 							className="object-contain"
 						/>
 					</div>

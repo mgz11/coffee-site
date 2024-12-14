@@ -7,6 +7,26 @@ import PurchaseReceiptEmail from "@/email/PurchaseReceipt";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 
+/**
+ * Handles Stripe webhooks for `charge.succeeded` events. This webhook is responsible
+ * for creating a new order in the database and sending a confirmation email to the
+ * customer.
+ *
+ * The webhook will first check if the order already exists in the database. If it
+ * does, the webhook will return a 200 status code. If it doesn't, the webhook will
+ * create a new order in the database and send a confirmation email to the customer.
+ *
+ * The webhook expects the following data from Stripe:
+ * - `charge.billing_details.email`: The customer's email address.
+ * - `charge.amount`: The amount paid in cents.
+ * - `charge.payment_intent`: The ID of the payment intent that triggered the webhook.
+ *
+ * The webhook will return a 400 status code if the payment intent ID is invalid, the
+ * email is not valid, or if there is an error retrieving the payment intent.
+ *
+ * The webhook will return a 500 status code if there is an error saving the order to
+ * the database.
+ */
 export async function POST(request: NextRequest) {
 	const event = await stripe.webhooks.constructEvent(
 		await request.text(),

@@ -4,6 +4,19 @@ import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
+/**
+ * Handles the creation of a Stripe payment intent.
+ *
+ * This function expects a JSON request body with an `amount` and `items`.
+ * It validates the request body, retrieves product details from the database,
+ * and calculates the total amount based on the current product prices.
+ * If a price discrepancy is detected between the client and server, it returns an error.
+ * Otherwise, it creates a Stripe payment intent and returns the client secret.
+ *
+ * @param request - A Request object containing the JSON body with `amount` and `items`.
+ * @returns A NextResponse object with the client secret or an error message.
+ */
+
 export async function POST(request: Request) {
 	try {
 		const { amount, items } = await request.json();
