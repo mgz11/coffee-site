@@ -27,6 +27,22 @@ This project is a minimalistic designed coffee site where users can:
 
 ---
 
+### Preview
+
+#### Customer Facing
+
+![Site Homepage](./public/assets/Coffee%20Site%20Screenshots/homepage.png)
+![About Page](./public/assets/Coffee%20Site%20Screenshots/about.png)
+![Menu Page](./public/assets/Coffee%20Site%20Screenshots/menu.png)
+![Cart Page](./public//assets/Coffee%20Site%20Screenshots/cart.png)
+![Checkout Page](./public/assets/Coffee%20Site%20Screenshots/checkout.png)
+
+#### Admin Facing
+
+![Dashboard](./public/assets/Coffee%20Site%20Screenshots/admindash.png)
+![Products](./public/assets/Coffee%20Site%20Screenshots/adminproducts.png)
+![Sales](./public/assets/Coffee%20Site%20Screenshots/adminsales.png)
+
 ## Technologies Used
 
 - **Frontend:** Next.js (React), TypeScript, HTML/CSS
@@ -35,25 +51,6 @@ This project is a minimalistic designed coffee site where users can:
 - **Payment:** Stripe
 - **Styling:** Tailwind CSS, Shadcn UI
 - **State Management:** Context API
-
----
-
-## Project Structure
-
-```
-/app
-├── menu
-├── cart
-├── checkout
-│   ├── CheckoutForm.tsx
-│   ├── CheckoutContainer.tsx
-│   └── page.tsx
-├── admin
-│   └── dashboard
-├── components
-├── styles
-└── utils
-```
 
 ---
 
