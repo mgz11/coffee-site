@@ -43,6 +43,8 @@ This project is a minimalistic designed coffee site where users can:
 ![Products](./public/assets/Coffee%20Site%20Screenshots/adminproducts.png)
 ![Sales](./public/assets/Coffee%20Site%20Screenshots/adminsales.png)
 
+---
+
 ## Technologies Used
 
 - **Frontend:** Next.js (React), TypeScript, HTML/CSS
